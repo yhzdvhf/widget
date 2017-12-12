@@ -66,7 +66,7 @@ public:
 			img = group->AddWidget<Image>("Group.Image", 0);
 			img->SetTexture(tex_img, 0, 0, 512, 512);
 			img->SetPos(384, 128);
-			img->SetSize(128, 128);
+			img->SetSize(192, 192);
 			
 			btn = group->AddWidget<Button>("Group.Button", 1);
 			btn->SetPressedTexture(tex_btn, 0, 0, 512, 64);
@@ -74,6 +74,21 @@ public:
 			btn->SetTexture(tex_btn, 0, 128, 512, 64);
 			btn->SetPos(384, 256);
 			btn->SetSize(256, 64);
+			btn->OnMousePressed([self=btn](WidgetContainer* root) {
+				auto grp = (WidgetContainer*)root->GetWidget("Group");
+				auto img = grp->GetWidget("Group.Image");
+
+				if (self->GetOrder() == 1) {
+					self->SetOrder(0, false);
+					img->SetOrder(1);
+				}
+				else {
+					self->SetOrder(1, false);
+					img->SetOrder(0);
+				}
+
+				return true;
+			});
 		});
 		
 		return true;

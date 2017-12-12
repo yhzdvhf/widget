@@ -6,7 +6,6 @@
 
 class Gui
 {
-public:
 	WidgetContainer root;
 public:
 	Gui();

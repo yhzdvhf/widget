@@ -4,7 +4,16 @@
 Widget::Widget(const std::string & id, size_t order, WidgetContainer * parent)
 	: id_(id), order_(order), parent_(parent) {}
 
-void Widget::SetOrder(int order) {}
+void Widget::SetOrder(int order, bool sort) {
+	order_ = order;
+
+	if (sort && parent_)
+		parent_->Sort();// will be called automatically at the end of Gui::Apply()
+}
+
+int Widget::GetOrder() const {
+	return order_;
+}
 
 void Widget::OnMousePressed(MouseCallback callback) {
 	mouse_pressed_ = callback;
@@ -44,4 +53,4 @@ void Widget::Show() { visible_ = true; }
 
 void Widget::Hide() { visible_ = false; }
 
-bool Widget::IsVisible() { return visible_; }
+bool Widget::IsVisible() const { return visible_; }

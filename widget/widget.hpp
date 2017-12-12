@@ -24,19 +24,15 @@ struct Rect {
 	}
 };
 
-class Gui;
 class WidgetContainer;
 
 class Widget 
 {
-	friend class Gui;
 	friend class WidgetContainer;
 public:
 	using MouseCallback = std::function<bool(WidgetContainer*)>;
 
 	Widget(const std::string& id, size_t order = 0, WidgetContainer* parent = nullptr);
-	
-	void SetOrder(int order);
 	
 	void OnMousePressed(MouseCallback callback);
 	void OnMouseReleased(MouseCallback callback);
@@ -49,27 +45,31 @@ public:
 	virtual void MouseEnter(float x, float y, WidgetContainer* root) {}
 	virtual void MouseLeave(float x, float y, WidgetContainer* root) {}
 
+	virtual void Sort() {}
+
 	virtual void Render() const = 0;
 
 	Rect GetRect() const;
 	void SetPos(float x, float y);
 	void SetSize(float w, float h);
 
+	void SetOrder(int order, bool sort = true);
+	int  GetOrder() const;
 	void Show();
 	void Hide();
 
-	bool IsVisible();
+	bool IsVisible() const;
 
 protected:
 	std::string      id_;
-	size_t           order_;
+	size_t           order_ = 0;
 	Rect             rect_;
 	bool             visible_ = true;
 	bool             hovered_ = false;
-	WidgetContainer* parent_ = nullptr;
+	WidgetContainer* parent_  = nullptr;
 
-	MouseCallback mouse_pressed_ = nullptr;
-	MouseCallback mouse_released_ = nullptr;
-	MouseCallback mouse_enter_ = nullptr;
-	MouseCallback mouse_leave_ = nullptr;
+	MouseCallback mouse_pressed_  = [](WidgetContainer*) {return false; };
+	MouseCallback mouse_released_ = [](WidgetContainer*) {return false; };
+	MouseCallback mouse_enter_    = [](WidgetContainer*) {return false; };
+	MouseCallback mouse_leave_    = [](WidgetContainer*) {return false; };
 };

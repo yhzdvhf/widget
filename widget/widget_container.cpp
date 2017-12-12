@@ -2,7 +2,7 @@
 
 #include "widget_container.hpp"
 
-Widget * WidgetContainer::GetWidget(std::string id)
+Widget* WidgetContainer::GetWidget(std::string id)
 {
 	return children_[indexes_[id]].get();
 }
@@ -34,11 +34,7 @@ void WidgetContainer::MousePressed(float x, float y, WidgetContainer * root)
 		{
 			(*child)->MousePressed(x, y, root);
 
-			if ((*child)->mouse_pressed_)
-			{
-				auto handled = (*child)->mouse_pressed_(root);
-				if (handled) break;
-			}
+			if ((*child)->mouse_pressed_(root)) break;
 		}
 	}
 }
@@ -53,11 +49,7 @@ void WidgetContainer::MouseReleased(float x, float y, WidgetContainer * root)
 		{
 			(*child)->MouseReleased(x, y, root);
 
-			if ((*child)->mouse_released_)
-			{
-				auto handled = (*child)->mouse_released_(root);
-				if (handled) break;
-			}
+			if ((*child)->mouse_released_(root)) break;
 		}
 	}
 }
@@ -80,11 +72,7 @@ void WidgetContainer::MouseMoved(float x, float y, WidgetContainer * root)
 				(*child)->MouseEnter(x, y, root);
 				(*child)->hovered_ = true;
 
-				if ((*child)->mouse_enter_)
-				{
-					enter_handled = (*child)->mouse_enter_(root);
-					if (enter_handled) break;
-				}
+				if ((*child)->mouse_enter_(root)) break;
 			}
 		}
 		else
@@ -94,11 +82,7 @@ void WidgetContainer::MouseMoved(float x, float y, WidgetContainer * root)
 				(*child)->MouseLeave(x, y, root);
 				(*child)->hovered_ = false;
 
-				if ((*child)->mouse_leave_)
-				{
-					leave_handled = (*child)->mouse_leave_(root);
-					if (leave_handled) break;
-				}
+				if ((*child)->mouse_leave_(root)) break;
 			}
 		}
 	}
@@ -106,11 +90,17 @@ void WidgetContainer::MouseMoved(float x, float y, WidgetContainer * root)
 
 void WidgetContainer::Sort() 
 {
+	//sort by order
 	std::sort(children_.begin(), children_.end(), [](const auto& l, const auto& r) { return (*l).order_ < (*r).order_; });
 	
+	//remap
 	indexes_.clear();
 
 	for (size_t i = 0; i < children_.size(); ++i) {
 		indexes_[children_[i]->id_] = i;
 	}
+
+	//sort children
+	for (auto& w : children_)
+		w->Sort();
 }
